@@ -21,19 +21,24 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
-# Install composer dependencies first (without dev)
+# Install composer dependencies (without dev)
 RUN composer install --no-dev --optimize-autoloader
 
-# Configure Apache DocumentRoot to point to Laravel public folder & update Directory permissions
-RUN sed -i 's!/var/www/html/public!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/apache2.conf
+# Configure Apache DocumentRoot and Directory permissions to prevent 403 Forbidden
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+RUN echo '<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' >> /etc/apache2/apache2.conf
+
 RUN a2enmod rewrite
 
 # Set correct permissions for storage and bootstrap cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose port 80 (Render maps this automatically to $PORT)
+# Expose port 80
 EXPOSE 80
 
 CMD apache2-foreground
