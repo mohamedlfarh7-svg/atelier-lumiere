@@ -49,5 +49,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port 80
 EXPOSE 80
 
-# Run migrations automatically on startup and start Apache
-CMD php artisan migrate --force && apache2-foreground
+# Run migrations, run seeders, and start Apache
+CMD php artisan migrate --force --seed && apache2-foreground
