@@ -21,8 +21,14 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
+# Setup environment file
+RUN if [ -f .env.example ]; then cp .env.example .env; fi
+
 # Install composer dependencies (without dev)
 RUN composer install --no-dev --optimize-autoloader
+
+# Generate app key if missing
+RUN php artisan key:generate --force
 
 # Configure Apache DocumentRoot and Directory permissions to prevent 403 / 500 errors
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
