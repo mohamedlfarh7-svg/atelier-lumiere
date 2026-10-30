@@ -41,7 +41,7 @@ RUN echo '<Directory /var/www/html/public>\n\
 
 RUN a2enmod rewrite
 
-# Create sqlite directory just in case, and set correct permissions for storage, cache, and database
+# Create sqlite directory, and set correct permissions for storage, cache, and database
 RUN mkdir -p /var/www/html/database && touch /var/www/html/database/database.sqlite
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
@@ -49,5 +49,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port 80
 EXPOSE 80
 
-# Clean start for Apache
-CMD apache2-foreground
+# Run migrations automatically on startup and start Apache
+CMD php artisan migrate --force && apache2-foreground
