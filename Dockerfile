@@ -24,7 +24,7 @@ COPY . .
 # Install composer dependencies (without dev)
 RUN composer install --no-dev --optimize-autoloader
 
-# Configure Apache DocumentRoot and Directory permissions to prevent 403 Forbidden
+# Configure Apache DocumentRoot and Directory permissions
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 RUN echo '<Directory /var/www/html/public>\n\
     Options Indexes FollowSymLinks\n\
@@ -41,4 +41,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Expose port 80
 EXPOSE 80
 
-CMD apache2-foreground
+CMD php artisan config:clear && php artisan cache:clear && apache2-foreground
