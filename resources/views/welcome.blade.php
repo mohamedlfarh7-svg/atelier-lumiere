@@ -217,7 +217,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6 items-start">
                 <div class="flex flex-col gap-4 sm:gap-5 md:gap-6">
                     <a href="/boules-de-neige" class="group relative h-[280px] sm:h-[320px] md:h-[360px] lg:h-[390px] xl:h-[410px] rounded-[24px] sm:rounded-[28px] overflow-hidden block">
-                        <img src="https://images.unsplash.com/photo-1513519245088-0e12902e5a38?q=80&w=1200" alt="Boules de Neige" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtHqtUEZJU2tUPBsCbAyiz5YHLI_YQ1ymSq5TYPOIYPqiaCrmT5ygtZaY&s=10" alt="Boules de Neige" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-7 lg:p-8 flex items-end justify-between gap-3 sm:gap-5">
                             <div>
@@ -243,7 +243,7 @@
 
                 <div class="flex flex-col gap-4 sm:gap-5 md:gap-6">
                     <a href="/nounours" class="group relative h-[340px] sm:h-[400px] md:h-[460px] lg:h-[470px] xl:h-[520px] rounded-[24px] sm:rounded-[28px] overflow-hidden block">
-                        <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=1200" alt="Nounours" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                        <img src="https://i5.walmartimages.com/seo/9-1-Large-Teddy-Bear-Rose-Valentines-Day-Stuffed-Animals-Plush-Toy-Cartoon-Cuddly-Doll-Soft-Plush-Bear-Doll-Stuffed-Animal-Toys-Valentines-Day-Decor_6d1aa5de-0761-46ab-a8ca-f3712f2531c5.36d6287a6b92909762c2a843eb21f8c6.jpeg" alt="Nounours" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-5 sm:p-6 md:p-7 lg:p-8 flex items-end justify-between gap-3 sm:gap-5">
                             <div>
