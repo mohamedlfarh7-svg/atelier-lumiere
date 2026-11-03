@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +10,11 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+        [x-cloak] {
+            display: none !important;
+        }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -26,6 +29,10 @@
             width: 6px;
         }
 
+        .modal-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
         .modal-scroll::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 10px;
@@ -35,47 +42,24 @@
 
 <body
     class="text-slate-800"
-    x-data="{
-        mobileMenu: false,
-
-        openEditModal: false,
-
-        editProduct: {
-            id: '',
-            name: '',
-            tag: '',
-            price: '',
-            image: '',
-            imagePreview: null,
-            description: ''
-        },
-
-        openOrdersModal: false,
-        openOrderDetailsModal: false,
-        selectedOrder: null,
-
-        orderCount: {{ $pendingOrdersCount ?? 0 }}
-    }"
+    x-data="adminPanel()"
 >
 
-<header
-    class="relative py-4 md:py-6 px-4 sm:px-6 md:px-12 flex justify-between items-center bg-white border-b border-slate-100 sticky top-0 z-40"
->
+<header class="relative py-4 md:py-6 px-4 sm:px-6 md:px-12 flex justify-between items-center bg-white border-b border-slate-100 sticky top-0 z-40">
 
     <a
-        href="/"
+        href="{{ route('home') }}"
         class="text-lg md:text-xl font-serif tracking-widest uppercase flex items-center space-x-2"
     >
         <span class="font-bold text-slate-900">ATELIER</span>
         <span class="font-light text-blue-600">LUMIÈRE</span>
     </a>
 
-
     <nav class="hidden lg:flex space-x-8 text-sm tracking-wide font-medium">
 
         <a
             href="/admin/boules-de-neige"
-            class="{{ $category == 'boules-de-neige'
+            class="{{ $category === 'boules-de-neige'
                 ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-1'
                 : 'text-slate-500 hover:text-slate-900' }}"
         >
@@ -84,7 +68,7 @@
 
         <a
             href="/admin/nounours"
-            class="{{ $category == 'nounours'
+            class="{{ $category === 'nounours'
                 ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-1'
                 : 'text-slate-500 hover:text-slate-900' }}"
         >
@@ -93,7 +77,7 @@
 
         <a
             href="/admin/parfums"
-            class="{{ $category == 'parfums'
+            class="{{ $category === 'parfums'
                 ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-1'
                 : 'text-slate-500 hover:text-slate-900' }}"
         >
@@ -102,7 +86,7 @@
 
         <a
             href="/admin/cadeaux"
-            class="{{ $category == 'cadeaux'
+            class="{{ $category === 'cadeaux'
                 ? 'text-slate-900 font-bold border-b-2 border-slate-900 pb-1'
                 : 'text-slate-500 hover:text-slate-900' }}"
         >
@@ -111,7 +95,6 @@
 
     </nav>
 
-
     <div class="flex items-center space-x-2 sm:space-x-4">
 
         <button
@@ -119,7 +102,6 @@
             @click="openOrdersModal = true"
             class="relative w-9 h-9 md:w-10 md:h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-200 transition"
         >
-
             <svg
                 class="w-5 h-5"
                 fill="none"
@@ -130,24 +112,22 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                 ></path>
             </svg>
 
             <span
+                x-cloak
                 x-show="orderCount > 0"
                 x-text="orderCount"
                 class="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white"
             ></span>
-
         </button>
-
 
         <a
             href="/{{ $category }}"
             class="hidden sm:flex items-center space-x-2 bg-slate-100 text-slate-700 px-5 py-2.5 text-xs uppercase tracking-wider rounded-full hover:bg-slate-200 transition"
         >
-
             <svg
                 class="w-4 h-4"
                 fill="none"
@@ -163,16 +143,13 @@
             </svg>
 
             <span>Boutique</span>
-
         </a>
-
 
         <button
             type="button"
             @click="mobileMenu = !mobileMenu"
             class="lg:hidden w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200 transition"
         >
-
             <svg
                 x-show="!mobileMenu"
                 class="w-5 h-5"
@@ -189,12 +166,12 @@
             </svg>
 
             <svg
+                x-cloak
                 x-show="mobileMenu"
                 class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                style="display:none;"
             >
                 <path
                     stroke-linecap="round"
@@ -203,23 +180,20 @@
                     d="M6 18L18 6M6 6l12 12"
                 ></path>
             </svg>
-
         </button>
 
     </div>
 
-
     <div
+        x-cloak
         x-show="mobileMenu"
         x-transition.opacity
-        @click.away="mobileMenu = false"
+        @click.outside="mobileMenu = false"
         class="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-100 shadow-lg px-4 py-3 space-y-1"
-        style="display:none;"
     >
-
         <a
             href="/admin/boules-de-neige"
-            class="block px-4 py-3 rounded-xl text-sm {{ $category == 'boules-de-neige'
+            class="block px-4 py-3 rounded-xl text-sm {{ $category === 'boules-de-neige'
                 ? 'bg-slate-100 font-bold text-slate-900'
                 : 'text-slate-600 hover:bg-slate-50' }}"
         >
@@ -228,7 +202,7 @@
 
         <a
             href="/admin/nounours"
-            class="block px-4 py-3 rounded-xl text-sm {{ $category == 'nounours'
+            class="block px-4 py-3 rounded-xl text-sm {{ $category === 'nounours'
                 ? 'bg-slate-100 font-bold text-slate-900'
                 : 'text-slate-600 hover:bg-slate-50' }}"
         >
@@ -237,7 +211,7 @@
 
         <a
             href="/admin/parfums"
-            class="block px-4 py-3 rounded-xl text-sm {{ $category == 'parfums'
+            class="block px-4 py-3 rounded-xl text-sm {{ $category === 'parfums'
                 ? 'bg-slate-100 font-bold text-slate-900'
                 : 'text-slate-600 hover:bg-slate-50' }}"
         >
@@ -246,7 +220,7 @@
 
         <a
             href="/admin/cadeaux"
-            class="block px-4 py-3 rounded-xl text-sm {{ $category == 'cadeaux'
+            class="block px-4 py-3 rounded-xl text-sm {{ $category === 'cadeaux'
                 ? 'bg-slate-100 font-bold text-slate-900'
                 : 'text-slate-600 hover:bg-slate-50' }}"
         >
@@ -259,20 +233,15 @@
         >
             ← Voir la boutique
         </a>
-
     </div>
 
 </header>
 
-
 <main class="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12">
 
-    <div
-        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10 gap-3 sm:gap-4"
-    >
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 md:mb-10 gap-3 sm:gap-4">
 
         <div>
-
             <p class="text-[11px] uppercase tracking-[0.2em] text-blue-600 font-bold mb-1">
                 Gestion Administrative
             </p>
@@ -280,9 +249,7 @@
             <h1 class="text-2xl md:text-4xl font-serif text-slate-900 capitalize">
                 Produits : {{ str_replace('-', ' ', $category) }}
             </h1>
-
         </div>
-
 
         <a
             href="/{{ $category }}"
@@ -293,12 +260,8 @@
 
     </div>
 
-
     @if(session('success'))
-
-        <div
-            class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 md:px-6 py-3 md:py-4 rounded-2xl mb-6 md:mb-8 text-sm flex items-center space-x-3"
-        >
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 md:px-6 py-3 md:py-4 rounded-2xl mb-6 md:mb-8 text-sm flex items-center space-x-3">
 
             <svg
                 class="w-5 h-5 shrink-0"
@@ -315,41 +278,28 @@
             </svg>
 
             <span>{{ session('success') }}</span>
-
         </div>
-
     @endif
 
-
     @if($errors->any())
-
-        <div
-            class="bg-rose-50 border border-rose-200 text-rose-700 px-4 md:px-6 py-4 rounded-2xl mb-6"
-        >
+        <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 md:px-6 py-4 rounded-2xl mb-6">
 
             <p class="font-bold text-sm mb-2">
                 Une erreur est survenue :
             </p>
 
             <ul class="text-sm list-disc pl-5 space-y-1">
-
                 @foreach($errors->all() as $error)
-
                     <li>{{ $error }}</li>
-
                 @endforeach
-
             </ul>
 
         </div>
-
     @endif
 
+    <div class="bg-white rounded-[20px] md:rounded-[24px] shadow-sm border border-slate-200/60 overflow-hidden">
 
-    <div
-        class="bg-white rounded-[20px] md:rounded-[24px] shadow-sm border border-slate-200/60 overflow-hidden"
-    >
-
+        {{-- MOBILE VIEW --}}
         <div class="md:hidden divide-y divide-slate-100">
 
             @forelse($products as $product)
@@ -359,11 +309,10 @@
                     <div class="flex items-center gap-3">
 
                         <img
-                            src="{{ Str::startsWith($product->image, 'http')
-                                ? $product->image
-                                : asset('storage/' . $product->image) }}"
+                            src="{{ Str::startsWith($product->image ?? '', 'http') ? $product->image : asset('storage/' . $product->image) }}"
                             alt="{{ $product->name }}"
                             class="w-16 h-16 object-cover rounded-xl shadow-sm border border-slate-100 shrink-0"
+                            onerror="this.src='https://via.placeholder.com/64?text=No+Image'"
                         >
 
                         <div class="min-w-0 flex-1">
@@ -377,67 +326,32 @@
                             </p>
 
                             <p class="text-sm font-bold text-slate-900 mt-1">
-
-                                {{ $product->price }}
-
-                                <span class="text-xs font-normal text-slate-500">
-                                    DH
-                                </span>
-
+                                {{ number_format((float) $product->price, 2) }}
+                                <span class="text-xs font-normal text-slate-500">DH</span>
                             </p>
 
                         </div>
 
                     </div>
 
-
                     @if($product->tag)
-
-                        <span
-                            class="self-start bg-blue-50 text-blue-700 border border-blue-100 text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 rounded-full"
-                        >
+                        <span class="self-start bg-blue-50 text-blue-700 border border-blue-100 text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 rounded-full">
                             {{ $product->tag }}
                         </span>
-
                     @else
-
                         <span class="self-start text-xs text-slate-400 italic">
                             Aucun tag
                         </span>
-
                     @endif
-
 
                     <div class="flex gap-2">
 
                         <button
-    type="button"
-    @click="
-        openEditModal = true;
-        editProduct = {
-            id: {{ $product->id }},
-            name: @js($product->name),
-            tag: @js($product->tag),
-            price: @js($product->price),
-            image: @js($product->image),
-            description: @js($product->description),
-            imagePreview: null
-        };
-    "
-    class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300"
->
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-        ></path>
-    </svg>
-
-    <span>Modifier</span>
-</button>
-
+                            type="button"
+                            data-product="{{ base64_encode($product->toJson()) }}"
+                            @click="openProductFromButton($el)"
+                            class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300"
+                        >
                             <svg
                                 class="w-4 h-4"
                                 fill="none"
@@ -453,20 +367,15 @@
                             </svg>
 
                             <span>Modifier</span>
-
                         </button>
 
-
+                        @if($product->id)
                         <form
-                            action="{{ route('admin.destroy', [
-                                'category' => $category,
-                                'id' => $product->id
-                            ]) }}"
+                            action="{{ route('admin.destroy', ['category' => $category, 'id' => $product->id]) }}"
                             method="POST"
                             class="flex-1"
                             onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
                         >
-
                             @csrf
                             @method('DELETE')
 
@@ -474,7 +383,6 @@
                                 type="submit"
                                 class="w-full inline-flex items-center justify-center gap-1.5 bg-rose-50 text-rose-600 border border-rose-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300"
                             >
-
                                 <svg
                                     class="w-4 h-4"
                                     fill="none"
@@ -490,10 +398,9 @@
                                 </svg>
 
                                 <span>Supprimer</span>
-
                             </button>
-
                         </form>
+                        @endif
 
                     </div>
 
@@ -503,9 +410,7 @@
 
                 <div class="py-16 text-center">
 
-                    <div
-                        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mx-auto mb-3"
-                    >
+                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mx-auto mb-3">
 
                         <svg
                             class="w-8 h-8"
@@ -533,37 +438,19 @@
 
         </div>
 
-
+        {{-- DESKTOP VIEW --}}
         <div class="hidden md:block overflow-x-auto">
 
             <table class="w-full text-left border-collapse">
 
                 <thead>
-
-                    <tr
-                        class="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500 font-bold"
-                    >
-
-                        <th class="py-5 px-6">
-                            Produit
-                        </th>
-
-                        <th class="py-5 px-6">
-                            Tag
-                        </th>
-
-                        <th class="py-5 px-6">
-                            Prix
-                        </th>
-
-                        <th class="py-5 px-6 text-right">
-                            Actions
-                        </th>
-
+                    <tr class="border-b border-slate-100 bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500 font-bold">
+                        <th class="py-5 px-6">Produit</th>
+                        <th class="py-5 px-6">Tag</th>
+                        <th class="py-5 px-6">Prix</th>
+                        <th class="py-5 px-6 text-right">Actions</th>
                     </tr>
-
                 </thead>
-
 
                 <tbody class="divide-y divide-slate-100 text-sm">
 
@@ -576,87 +463,55 @@
                                 <div class="flex items-center space-x-4">
 
                                     <img
-                                        src="{{ Str::startsWith($product->image, 'http')
-                                            ? $product->image
-                                            : asset('storage/' . $product->image) }}"
+                                        src="{{ Str::startsWith($product->image ?? '', 'http') ? $product->image : asset('storage/' . $product->image) }}"
                                         alt="{{ $product->name }}"
                                         class="w-14 h-14 object-cover rounded-xl shadow-sm border border-slate-100"
+                                        onerror="this.src='https://via.placeholder.com/56?text=No+Image'"
                                     >
 
                                     <div>
-
                                         <p class="font-bold text-slate-900">
                                             {{ $product->name }}
                                         </p>
 
-                                        <p
-                                            class="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[200px]"
-                                        >
+                                        <p class="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[200px]">
                                             {{ $product->description }}
                                         </p>
-
                                     </div>
 
                                 </div>
 
                             </td>
 
-
                             <td class="py-4 px-6">
 
                                 @if($product->tag)
-
-                                    <span
-                                        class="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 rounded-full"
-                                    >
+                                    <span class="bg-blue-50 text-blue-700 border border-blue-100 text-[10px] uppercase font-bold tracking-wider px-3 py-1.5 rounded-full">
                                         {{ $product->tag }}
                                     </span>
-
                                 @else
-
                                     <span class="text-xs text-slate-400 italic">
                                         Aucun
                                     </span>
-
                                 @endif
 
                             </td>
 
-
                             <td class="py-4 px-6 font-bold text-slate-900">
-
-                                {{ $product->price }}
-
-                                <span class="text-xs font-normal text-slate-500">
-                                    DH
-                                </span>
-
+                                {{ number_format((float) $product->price, 2) }}
+                                <span class="text-xs font-normal text-slate-500">DH</span>
                             </td>
-
 
                             <td class="py-4 px-6 text-right">
 
-                                <div
-                                    class="flex flex-col sm:flex-row sm:justify-end gap-2"
-                                >
+                                <div class="flex justify-end gap-2">
 
                                     <button
                                         type="button"
-                                        @click='
-                                            openEditModal = true;
-                                            editProduct = @json([
-                                                "id" => $product->id,
-                                                "name" => $product->name,
-                                                "tag" => $product->tag,
-                                                "price" => $product->price,
-                                                "image" => $product->image,
-                                                "description" => $product->description,
-                                                "imagePreview" => null
-                                            ]);
-                                        '
+                                        data-product="{{ base64_encode($product->toJson()) }}"
+                                        @click="openProductFromButton($el)"
                                         class="inline-flex items-center justify-center space-x-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300"
                                     >
-
                                         <svg
                                             class="w-4 h-4"
                                             fill="none"
@@ -672,27 +527,21 @@
                                         </svg>
 
                                         <span>Modifier</span>
-
                                     </button>
 
-
+                                    @if($product->id)
                                     <form
-                                        action="{{ route('admin.destroy', [
-                                            'category' => $category,
-                                            'id' => $product->id
-                                        ]) }}"
+                                        action="{{ route('admin.destroy', ['category' => $category, 'id' => $product->id]) }}"
                                         method="POST"
                                         onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
                                     >
-
                                         @csrf
                                         @method('DELETE')
 
                                         <button
                                             type="submit"
-                                            class="w-full inline-flex items-center justify-center space-x-1.5 bg-rose-50 text-rose-600 border border-rose-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300"
+                                            class="inline-flex items-center justify-center space-x-1.5 bg-rose-50 text-rose-600 border border-rose-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300"
                                         >
-
                                             <svg
                                                 class="w-4 h-4"
                                                 fill="none"
@@ -708,10 +557,9 @@
                                             </svg>
 
                                             <span>Supprimer</span>
-
                                         </button>
-
                                     </form>
+                                    @endif
 
                                 </div>
 
@@ -722,14 +570,9 @@
                     @empty
 
                         <tr>
-
-                            <td
-                                colspan="4"
-                                class="py-20 text-center text-slate-400 text-sm"
-                            >
+                            <td colspan="4" class="py-20 text-center text-slate-400 text-sm">
                                 Aucun produit trouvé dans cette catégorie.
                             </td>
-
                         </tr>
 
                     @endforelse
@@ -744,26 +587,21 @@
 
 </main>
 
-
-
+{{-- ORDERS MODAL --}}
 <div
+    x-cloak
     x-show="openOrdersModal"
     x-transition.opacity
+    @keydown.escape.window="openOrdersModal = false"
     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto"
-    style="display:none;"
 >
-
     <div
-        @click.away="openOrdersModal = false"
+        @click.outside="openOrdersModal = false"
         class="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh] sm:max-h-[85vh] my-auto"
     >
-
-        <div
-            class="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0"
-        >
+        <div class="p-4 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
 
             <div>
-
                 <h3 class="font-serif text-xl sm:text-2xl text-slate-900">
                     Nouvelles Commandes
                 </h3>
@@ -771,9 +609,7 @@
                 <p class="text-xs text-slate-500 mt-1">
                     Commandes en attente de validation
                 </p>
-
             </div>
-
 
             <button
                 type="button"
@@ -785,76 +621,58 @@
 
         </div>
 
-
-        <div
-            class="p-4 sm:p-6 overflow-y-auto modal-scroll space-y-3 flex-1"
-        >
+        <div class="p-4 sm:p-6 overflow-y-auto modal-scroll space-y-3 flex-1">
 
             @forelse($pendingOrders ?? [] as $order)
 
-                <div
-                    @click='
-                        selectedOrder = @json($order);
-                        openOrdersModal = false;
-                        openOrderDetailsModal = true;
-                    '
-                    class="flex items-center justify-between gap-3 p-3 sm:p-4 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group"
+                <button
+                    type="button"
+                    data-order="{{ base64_encode($order->toJson()) }}"
+                    @click="openOrderFromButton($el)"
+                    class="w-full text-left flex items-center justify-between gap-3 p-3 sm:p-4 bg-white border border-slate-200 rounded-2xl cursor-pointer hover:border-blue-400 hover:shadow-md transition-all group"
                 >
+                    <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
 
-                    <div
-                        class="flex items-center space-x-3 sm:space-x-4 min-w-0"
-                    >
-
-                        <div
-                            class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm shrink-0"
-                        >
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm shrink-0">
 
                             <img
-                                src="{{ Str::startsWith($order['product_image'], 'http')
-                                    ? $order['product_image']
-                                    : asset('storage/' . $order['product_image']) }}"
-                                alt="{{ $order['product_name'] }}"
+                                src="{{ Str::startsWith($order->product_image ?? '', 'http') ? $order->product_image : asset('storage/' . $order->product_image) }}"
+                                alt="{{ $order->product_name }}"
                                 class="w-full h-full object-cover"
+                                onerror="this.src='https://via.placeholder.com/56?text=No+Image'"
                             >
 
                         </div>
 
-
                         <div class="min-w-0">
 
                             <p class="text-sm font-bold text-slate-900 truncate">
-                                {{ $order['product_name'] }}
+                                {{ $order->product_name }}
                             </p>
 
                             <p class="text-xs text-slate-500 mt-0.5 truncate">
-                                {{ $order['name'] }} · {{ $order['city'] }}
+                                {{ $order->name }} · {{ $order->city }}
                             </p>
 
                             <p class="text-xs font-bold text-emerald-600 mt-1">
-                                {{ $order['total_price'] }} DH
+                                {{ number_format((float) $order->total_price, 2) }} DH
                             </p>
 
                         </div>
 
                     </div>
 
-
-                    <span
-                        class="text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform shrink-0"
-                    >
+                    <span class="text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform shrink-0">
                         Voir →
                     </span>
-
-                </div>
+                </button>
 
             @empty
 
                 <div class="text-center py-10">
-
                     <p class="text-slate-400 text-sm">
                         Aucune nouvelle commande pour le moment.
                     </p>
-
                 </div>
 
             @endforelse
@@ -862,29 +680,25 @@
         </div>
 
     </div>
-
 </div>
 
-
-
+{{-- ORDER DETAILS MODAL --}}
 <div
+    x-cloak
     x-show="openOrderDetailsModal"
     x-transition.opacity
+    @keydown.escape.window="closeOrderDetails()"
     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto"
-    style="display:none;"
 >
-
     <div
-        @click.away="openOrderDetailsModal = false"
+        @click.outside="closeOrderDetails()"
         class="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-4xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[92vh] sm:max-h-[90vh] my-auto"
     >
-
         <button
             type="button"
-            @click="openOrderDetailsModal = false"
+            @click="closeOrderDetails()"
             class="absolute top-3 right-3 md:top-5 md:right-5 z-50 w-9 h-9 md:w-10 md:h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 shadow-sm transition-all hover:rotate-90"
         >
-
             <svg
                 class="w-5 h-5"
                 fill="none"
@@ -898,38 +712,22 @@
                     d="M6 18L18 6M6 6l12 12"
                 ></path>
             </svg>
-
         </button>
 
-
-        <div
-            class="w-full md:w-5/12 relative bg-slate-100 shrink-0 h-48 sm:h-64 md:h-auto"
-        >
+        <div class="w-full md:w-5/12 relative bg-slate-100 shrink-0 h-48 sm:h-64 md:h-auto md:min-h-[500px]">
 
             <img
-                :src="selectedOrder && selectedOrder.product_image
-                    ? (
-                        selectedOrder.product_image.startsWith('http')
-                        ? selectedOrder.product_image
-                        : '/storage/' + selectedOrder.product_image
-                    )
-                    : ''"
+                :src="orderImageUrl()"
                 alt="Produit"
                 class="absolute inset-0 w-full h-full object-cover"
+                onerror="this.src='https://via.placeholder.com/400?text=No+Image'"
             >
 
-            <div
-                class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
-            ></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
 
+            <div class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 text-white">
 
-            <div
-                class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 text-white"
-            >
-
-                <p
-                    class="text-[10px] uppercase tracking-[0.2em] text-white/70 font-bold mb-1"
-                >
+                <p class="text-[10px] uppercase tracking-[0.2em] text-white/70 font-bold mb-1">
                     Produit commandé
                 </p>
 
@@ -938,32 +736,22 @@
                     x-text="selectedOrder ? selectedOrder.product_name : ''"
                 ></h4>
 
-
-                <div
-                    class="mt-2 inline-flex bg-white/20 backdrop-blur rounded-lg px-3 py-1"
-                >
-
+                <div class="mt-2 inline-flex bg-white/20 backdrop-blur rounded-lg px-3 py-1">
                     <span
                         class="text-sm font-bold"
                         x-text="selectedOrder ? selectedOrder.total_price + ' DH' : ''"
                     ></span>
-
                 </div>
 
             </div>
 
         </div>
 
-
-        <div
-            class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white flex flex-col"
-        >
+        <div class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white flex flex-col">
 
             <div class="mb-5 md:mb-6 border-b border-slate-100 pb-4">
 
-                <p
-                    class="text-[10px] uppercase tracking-[0.2em] text-blue-600 font-bold mb-2"
-                >
+                <p class="text-[10px] uppercase tracking-[0.2em] text-blue-600 font-bold mb-2">
                     Finaliser la commande
                 </p>
 
@@ -973,18 +761,12 @@
 
             </div>
 
-
             <div class="space-y-3 sm:space-y-4 mb-6 md:mb-8 flex-1">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
 
-                    <div
-                        class="bg-slate-50 p-4 rounded-2xl border border-slate-100"
-                    >
-
-                        <p
-                            class="text-[10px] uppercase text-slate-500 font-bold mb-1"
-                        >
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <p class="text-[10px] uppercase text-slate-500 font-bold mb-1">
                             Client
                         </p>
 
@@ -992,17 +774,10 @@
                             class="font-bold text-slate-900"
                             x-text="selectedOrder ? selectedOrder.name : ''"
                         ></p>
-
                     </div>
 
-
-                    <div
-                        class="bg-slate-50 p-4 rounded-2xl border border-slate-100"
-                    >
-
-                        <p
-                            class="text-[10px] uppercase text-slate-500 font-bold mb-1"
-                        >
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <p class="text-[10px] uppercase text-slate-500 font-bold mb-1">
                             Téléphone
                         </p>
 
@@ -1010,19 +785,12 @@
                             class="font-bold text-slate-900"
                             x-text="selectedOrder ? selectedOrder.phone : ''"
                         ></p>
-
                     </div>
 
                 </div>
 
-
-                <div
-                    class="bg-slate-50 p-4 rounded-2xl border border-slate-100"
-                >
-
-                    <p
-                        class="text-[10px] uppercase text-slate-500 font-bold mb-1"
-                    >
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-[10px] uppercase text-slate-500 font-bold mb-1">
                         Ville
                     </p>
 
@@ -1030,17 +798,10 @@
                         class="font-bold text-slate-900"
                         x-text="selectedOrder ? selectedOrder.city : ''"
                     ></p>
-
                 </div>
 
-
-                <div
-                    class="bg-slate-50 p-4 rounded-2xl border border-slate-100"
-                >
-
-                    <p
-                        class="text-[10px] uppercase text-slate-500 font-bold mb-1"
-                    >
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-[10px] uppercase text-slate-500 font-bold mb-1">
                         Adresse de livraison
                     </p>
 
@@ -1048,34 +809,20 @@
                         class="font-bold text-slate-900 leading-relaxed"
                         x-text="selectedOrder ? selectedOrder.address : ''"
                     ></p>
-
                 </div>
 
+                <div class="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 sm:p-5 space-y-3 mt-4">
 
-                <div
-                    class="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 sm:p-5 space-y-3 mt-4"
-                >
-
-                    <div
-                        class="flex justify-between text-sm text-slate-600"
-                    >
-
-                        <span>
-                            Frais de livraison
-                        </span>
+                    <div class="flex justify-between text-sm text-slate-600">
+                        <span>Frais de livraison</span>
 
                         <span
                             class="font-semibold text-slate-900"
                             x-text="selectedOrder ? selectedOrder.shipping_fee + ' DH' : ''"
                         ></span>
-
                     </div>
 
-
-                    <div
-                        class="border-t border-slate-200 pt-3 flex justify-between items-center"
-                    >
-
+                    <div class="border-t border-slate-200 pt-3 flex justify-between items-center">
                         <span class="font-bold text-slate-900">
                             Total à payer
                         </span>
@@ -1084,33 +831,26 @@
                             class="font-bold text-lg text-emerald-600"
                             x-text="selectedOrder ? selectedOrder.total_price + ' DH' : ''"
                         ></span>
-
                     </div>
 
                 </div>
 
             </div>
 
-
-            <div
-                class="flex flex-col sm:flex-row gap-3 mt-auto pt-4"
-            >
+            <div class="flex flex-col sm:flex-row gap-3 mt-auto pt-4">
 
                 <form
-                    :action="selectedOrder
-                        ? '/admin/order/' + selectedOrder.id + '/accept'
-                        : '#'"
+                    :action="selectedOrder ? '/admin/order/' + selectedOrder.id + '/accept' : '#'"
                     method="POST"
                     class="flex-1"
                 >
-
                     @csrf
 
                     <button
                         type="submit"
-                        class="w-full bg-emerald-600 text-white py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-widest hover:bg-emerald-700 transition shadow-lg font-bold flex items-center justify-center space-x-2"
+                        :disabled="!selectedOrder"
+                        class="w-full bg-emerald-600 text-white py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-widest hover:bg-emerald-700 transition shadow-lg font-bold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-
                         <svg
                             class="w-4 h-4"
                             fill="none"
@@ -1126,27 +866,21 @@
                         </svg>
 
                         <span>Valider</span>
-
                     </button>
-
                 </form>
 
-
                 <form
-                    :action="selectedOrder
-                        ? '/admin/order/' + selectedOrder.id + '/refuse'
-                        : '#'"
+                    :action="selectedOrder ? '/admin/order/' + selectedOrder.id + '/refuse' : '#'"
                     method="POST"
                     class="flex-1"
                 >
-
                     @csrf
 
                     <button
                         type="submit"
-                        class="w-full bg-rose-50 text-rose-600 border border-rose-200 py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-widest hover:bg-rose-600 hover:text-white transition shadow-sm font-bold flex items-center justify-center space-x-2"
+                        :disabled="!selectedOrder"
+                        class="w-full bg-rose-50 text-rose-600 border border-rose-200 py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-widest hover:bg-rose-600 hover:text-white transition shadow-sm font-bold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-
                         <svg
                             class="w-4 h-4"
                             fill="none"
@@ -1162,9 +896,7 @@
                         </svg>
 
                         <span>Refuser</span>
-
                     </button>
-
                 </form>
 
             </div>
@@ -1172,29 +904,25 @@
         </div>
 
     </div>
-
 </div>
 
-
-
+{{-- EDIT PRODUCT MODAL --}}
 <div
+    x-cloak
     x-show="openEditModal"
     x-transition.opacity
+    @keydown.escape.window="closeEditModal()"
     class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto"
-    style="display:none;"
 >
-
     <div
-        @click.away="openEditModal = false"
+        @click.outside="closeEditModal()"
         class="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-5xl shadow-2xl relative overflow-hidden flex flex-col md:flex-row max-h-[92vh] sm:max-h-[90vh] my-auto"
     >
-
         <button
             type="button"
-            @click="openEditModal = false"
+            @click="closeEditModal()"
             class="absolute top-3 right-3 md:top-5 md:right-5 z-50 w-9 h-9 md:w-10 md:h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 shadow-sm transition-all hover:rotate-90"
         >
-
             <svg
                 class="w-5 h-5"
                 fill="none"
@@ -1208,58 +936,30 @@
                     d="M6 18L18 6M6 6l12 12"
                 ></path>
             </svg>
-
         </button>
 
-
-        <div
-            class="w-full md:w-5/12 relative h-48 sm:h-60 md:h-auto md:min-h-[500px] bg-slate-100 shrink-0"
-        >
+        <div class="w-full md:w-5/12 relative h-48 sm:h-60 md:h-auto md:min-h-[500px] bg-slate-100 shrink-0">
 
             <input
                 type="file"
                 name="image"
                 form="editForm"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/jpg,image/webp"
                 class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30"
-                @change="
-                    if ($event.target.files && $event.target.files[0]) {
-                        editProduct.imagePreview = URL.createObjectURL(
-                            $event.target.files[0]
-                        );
-                    }
-                "
+                @change="previewSelectedImage($event)"
             >
 
-
-            <template
-                x-if="editProduct.imagePreview || editProduct.image"
-            >
-
+            <template x-if="editProduct.imagePreview || editProduct.image">
                 <img
-                    :src="
-                        editProduct.imagePreview
-                        ? editProduct.imagePreview
-                        : (
-                            editProduct.image.startsWith('http')
-                            ? editProduct.image
-                            : '/storage/' + editProduct.image
-                        )
-                    "
+                    :src="productImageUrl()"
                     class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300"
                     alt="Aperçu"
+                    onerror="this.style.display='none'"
                 >
-
             </template>
 
-
-            <template
-                x-if="!editProduct.imagePreview && !editProduct.image"
-            >
-
-                <div
-                    class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10 space-y-3"
-                >
+            <template x-if="!editProduct.imagePreview && !editProduct.image">
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10 space-y-3">
 
                     <svg
                         class="w-12 h-12"
@@ -1280,17 +980,11 @@
                     </span>
 
                 </div>
-
             </template>
 
+            <div class="absolute inset-0 bg-slate-900/50 z-20 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none text-white space-y-2">
 
-            <div
-                class="absolute inset-0 bg-slate-900/50 z-20 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none text-white space-y-2"
-            >
-
-                <div
-                    class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center"
-                >
+                <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
 
                     <svg
                         class="w-6 h-6"
@@ -1315,9 +1009,7 @@
 
                 </div>
 
-                <span
-                    class="text-xs font-bold uppercase tracking-wider"
-                >
+                <span class="text-xs font-bold uppercase tracking-wider">
                     Changer l'image
                 </span>
 
@@ -1325,23 +1017,15 @@
 
         </div>
 
-
-
-        <div
-            class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white"
-        >
+        <div class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white">
 
             <div class="mb-6 md:mb-8">
 
-                <p
-                    class="text-[10px] uppercase tracking-[0.25em] text-blue-600 font-bold mb-2"
-                >
+                <p class="text-[10px] uppercase tracking-[0.25em] text-blue-600 font-bold mb-2">
                     Modification
                 </p>
 
-                <h3
-                    class="font-serif text-2xl md:text-3xl text-slate-900"
-                >
+                <h3 class="font-serif text-2xl md:text-3xl text-slate-900">
                     Détails du produit
                 </h3>
 
@@ -1351,27 +1035,18 @@
 
             </div>
 
-
             <form
                 id="editForm"
-                :action="'{{ route('admin.update', [
-                    'category' => $category,
-                    'id' => '__ID__'
-                ]) }}'.replace('__ID__', editProduct.id)"
+                :action="editProduct.id ? '/admin/{{ $category }}/' + editProduct.id : '#'"
                 method="POST"
                 enctype="multipart/form-data"
                 class="space-y-4 sm:space-y-5"
             >
-
                 @csrf
                 @method('PUT')
 
-
                 <div>
-
-                    <label
-                        class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold"
-                    >
+                    <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">
                         Nom du produit
                     </label>
 
@@ -1379,18 +1054,14 @@
                         type="text"
                         name="name"
                         x-model="editProduct.name"
+                        maxlength="255"
                         required
                         class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800"
                     >
-
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold"
-                    >
+                    <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">
                         Tag / Catégorie
                     </label>
 
@@ -1399,76 +1070,31 @@
                         x-model="editProduct.tag"
                         class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800 cursor-pointer"
                     >
-
                         <option value="">
                             Sélectionnez un tag (Optionnel)
                         </option>
 
-
-                        @if($category == 'boules-de-neige')
-
-                            <option value="Grand">
-                                Grand
-                            </option>
-
-                            <option value="Moyen">
-                                Moyen
-                            </option>
-
-                            <option value="Petite">
-                                Petite
-                            </option>
-
-                        @elseif($category == 'nounours')
-
-                            <option value="Coup de cœur">
-                                Coup de cœur
-                            </option>
-
-                            <option value="Édition douce">
-                                Édition douce
-                            </option>
-
-                        @elseif($category == 'parfums')
-
-                            <option value="Femme">
-                                Femme
-                            </option>
-
-                            <option value="Homme">
-                                Homme
-                            </option>
-
-                        @elseif($category == 'cadeaux')
-
-                            <option value="Romantique">
-                                Romantique
-                            </option>
-
-                            <option value="Anniversaire">
-                                Anniversaire
-                            </option>
-
-                            <option value="Naissance">
-                                Naissance
-                            </option>
-
-                            <option value="Merci">
-                                Merci
-                            </option>
-
+                        @if($category === 'boules-de-neige')
+                            <option value="Grand">Grand</option>
+                            <option value="Moyen">Moyen</option>
+                            <option value="Petite">Petite</option>
+                        @elseif($category === 'nounours')
+                            <option value="Coup de cœur">Coup de cœur</option>
+                            <option value="Édition douce">Édition douce</option>
+                        @elseif($category === 'parfums')
+                            <option value="Femme">Femme</option>
+                            <option value="Homme">Homme</option>
+                        @elseif($category === 'cadeaux')
+                            <option value="Romantique">Romantique</option>
+                            <option value="Anniversaire">Anniversaire</option>
+                            <option value="Naissance">Naissance</option>
+                            <option value="Merci">Merci</option>
                         @endif
-
                     </select>
-
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold"
-                    >
+                    <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">
                         Prix (DH)
                     </label>
 
@@ -1477,19 +1103,14 @@
                         step="0.01"
                         min="0"
                         name="price"
-                        x-model="editProduct.price"
+                        x-model.number="editProduct.price"
                         required
                         class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800"
                     >
-
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold"
-                    >
+                    <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">
                         Description
                     </label>
 
@@ -1499,18 +1120,14 @@
                         rows="3"
                         class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800 resize-none"
                     ></textarea>
-
                 </div>
-
 
                 <button
                     type="submit"
-                    class="w-full bg-[#121c2c] text-white py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-[0.2em] font-medium hover:bg-slate-800 transition shadow-lg flex items-center justify-center space-x-2 mt-4 group"
+                    :disabled="!editProduct.id"
+                    class="w-full bg-[#121c2c] text-white py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-[0.2em] font-medium hover:bg-slate-800 transition shadow-lg flex items-center justify-center space-x-2 mt-4 group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-
-                    <span>
-                        Enregistrer les modifications
-                    </span>
+                    <span>Enregistrer les modifications</span>
 
                     <svg
                         class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
@@ -1525,7 +1142,6 @@
                             d="M14 5l7 7m0 0l-7 7m7-7H3"
                         ></path>
                     </svg>
-
                 </button>
 
             </form>
@@ -1533,8 +1149,191 @@
         </div>
 
     </div>
-
 </div>
+
+<script>
+    function adminPanel() {
+        // Liste des tags valides par catégorie (côté JS pour filtrage)
+        const validTagsMap = {
+            'boules-de-neige': ['Grand', 'Moyen', 'Petite'],
+            'nounours': ['Coup de cœur', 'Édition douce'],
+            'parfums': ['Femme', 'Homme'],
+            'cadeaux': ['Romantique', 'Anniversaire', 'Naissance', 'Merci'],
+        };
+
+        const currentCategory = @json($category);
+        const validTags = validTagsMap[currentCategory] || [];
+
+        return {
+            mobileMenu: false,
+            openEditModal: false,
+            openOrdersModal: false,
+            openOrderDetailsModal: false,
+            selectedOrder: null,
+            orderCount: {{ (int) ($pendingOrdersCount ?? 0) }},
+            validTags: validTags,
+            editProduct: {
+                id: '',
+                name: '',
+                tag: '',
+                price: '',
+                image: '',
+                imagePreview: null,
+                description: ''
+            },
+
+            decodeData(value) {
+                try {
+                    const binary = window.atob(value);
+                    const bytes = Uint8Array.from(binary, character => {
+                        return character.charCodeAt(0);
+                    });
+
+                    return JSON.parse(
+                        new TextDecoder('utf-8').decode(bytes)
+                    );
+                } catch (error) {
+                    console.error('Impossible de lire les données.', error);
+                    return null;
+                }
+            },
+
+            openProductFromButton(element) {
+                const product = this.decodeData(
+                    element.dataset.product || ''
+                );
+
+                if (!product) {
+                    return;
+                }
+
+                // Nettoyer tout aperçu précédent
+                if (
+                    this.editProduct.imagePreview &&
+                    this.editProduct.imagePreview.startsWith('blob:')
+                ) {
+                    URL.revokeObjectURL(this.editProduct.imagePreview);
+                }
+
+                // Normalisation des valeurs
+                const tagValue = this.validTags.includes(product.tag)
+                    ? product.tag
+                    : '';
+
+                const priceValue = (product.price !== undefined
+                    && product.price !== null
+                    && product.price !== '')
+                    ? Number(product.price)
+                    : '';
+
+                this.editProduct = {
+                    id: product.id ?? '',
+                    name: product.name ?? '',
+                    tag: tagValue,
+                    price: priceValue,
+                    image: product.image ?? '',
+                    imagePreview: null,
+                    description: product.description ?? ''
+                };
+
+                this.openEditModal = true;
+            },
+
+            closeEditModal() {
+                if (
+                    this.editProduct.imagePreview &&
+                    this.editProduct.imagePreview.startsWith('blob:')
+                ) {
+                    URL.revokeObjectURL(
+                        this.editProduct.imagePreview
+                    );
+                }
+
+                this.openEditModal = false;
+
+                this.editProduct = {
+                    id: '',
+                    name: '',
+                    tag: '',
+                    price: '',
+                    image: '',
+                    imagePreview: null,
+                    description: ''
+                };
+            },
+
+            previewSelectedImage(event) {
+                const file = event.target.files?.[0];
+
+                if (!file) {
+                    return;
+                }
+
+                if (
+                    this.editProduct.imagePreview &&
+                    this.editProduct.imagePreview.startsWith('blob:')
+                ) {
+                    URL.revokeObjectURL(
+                        this.editProduct.imagePreview
+                    );
+                }
+
+                this.editProduct.imagePreview =
+                    URL.createObjectURL(file);
+            },
+
+            productImageUrl() {
+                if (this.editProduct.imagePreview) {
+                    return this.editProduct.imagePreview;
+                }
+
+                if (!this.editProduct.image) {
+                    return '';
+                }
+
+                if (this.editProduct.image.startsWith('http')) {
+                    return this.editProduct.image;
+                }
+
+                return '/storage/' + this.editProduct.image;
+            },
+
+            openOrderFromButton(element) {
+                const order = this.decodeData(
+                    element.dataset.order || ''
+                );
+
+                if (!order) {
+                    return;
+                }
+
+                this.selectedOrder = order;
+                this.openOrdersModal = false;
+                this.openOrderDetailsModal = true;
+            },
+
+            closeOrderDetails() {
+                this.openOrderDetailsModal = false;
+                this.selectedOrder = null;
+            },
+
+            orderImageUrl() {
+                if (!this.selectedOrder?.product_image) {
+                    return '';
+                }
+
+                if (
+                    this.selectedOrder.product_image.startsWith('http')
+                ) {
+                    return this.selectedOrder.product_image;
+                }
+
+                return '/storage/' +
+                    this.selectedOrder.product_image;
+            }
+        };
+    }
+</script>
 
 </body>
 </html>
