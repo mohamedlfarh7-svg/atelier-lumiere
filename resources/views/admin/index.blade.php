@@ -411,21 +411,32 @@
                     <div class="flex gap-2">
 
                         <button
-                            type="button"
-                            @click='
-                                openEditModal = true;
-                                editProduct = @json([
-                                    "id" => $product->id,
-                                    "name" => $product->name,
-                                    "tag" => $product->tag,
-                                    "price" => $product->price,
-                                    "image" => $product->image,
-                                    "description" => $product->description,
-                                    "imagePreview" => null
-                                ]);
-                            '
-                            class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300"
-                        >
+    type="button"
+    @click="
+        openEditModal = true;
+        editProduct = {
+            id: {{ $product->id }},
+            name: @js($product->name),
+            tag: @js($product->tag),
+            price: @js($product->price),
+            image: @js($product->image),
+            description: @js($product->description),
+            imagePreview: null
+        };
+    "
+    class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300"
+>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+        ></path>
+    </svg>
+
+    <span>Modifier</span>
+</button>
 
                             <svg
                                 class="w-4 h-4"
