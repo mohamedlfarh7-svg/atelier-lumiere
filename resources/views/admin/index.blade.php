@@ -99,7 +99,11 @@
                 @forelse($products as $product)
                     <div class="p-4 flex flex-col gap-3">
                         <div class="flex items-center gap-3">
-                            <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-16 h-16 object-cover rounded-xl shadow-sm border border-slate-100 shrink-0">
+                            @if($product->image)
+                                <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-16 h-16 object-cover rounded-xl shadow-sm border border-slate-100 shrink-0">
+                            @else
+                                <div class="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 shrink-0 text-xs">No img</div>
+                            @endif
                             <div class="min-w-0 flex-1">
                                 <p class="font-bold text-slate-900 text-sm truncate">{{ $product->name }}</p>
                                 <p class="text-xs text-slate-400 mt-0.5 line-clamp-2">{{ $product->description }}</p>
@@ -117,10 +121,10 @@
                                 editProduct = { 
                                     id: '{{ $product->id }}', 
                                     name: '{{ addslashes($product->name) }}', 
-                                    tag: '{{ $product->tag }}', 
+                                    tag: '{{ $product->tag ?? '' }}', 
                                     price: '{{ $product->price }}', 
-                                    image: '{{ $product->image }}', 
-                                    description: '{{ addslashes($product->description) }}',
+                                    image: '{{ $product->image ?? '' }}', 
+                                    description: '{{ addslashes($product->description ?? '') }}',
                                     imagePreview: null
                                 }"
                                 class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
@@ -165,7 +169,11 @@
                             <tr class="hover:bg-slate-50/80 transition-colors group">
                                 <td class="py-4 px-6">
                                     <div class="flex items-center space-x-4">
-                                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-14 h-14 object-cover rounded-xl shadow-sm border border-slate-100">
+                                        @if($product->image)
+                                            <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-14 h-14 object-cover rounded-xl shadow-sm border border-slate-100">
+                                        @else
+                                            <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-xs">No img</div>
+                                        @endif
                                         <div>
                                             <p class="font-bold text-slate-900">{{ $product->name }}</p>
                                             <p class="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[200px]">{{ $product->description }}</p>
@@ -189,10 +197,10 @@
                                             editProduct = { 
                                                 id: '{{ $product->id }}', 
                                                 name: '{{ addslashes($product->name) }}', 
-                                                tag: '{{ $product->tag }}', 
+                                                tag: '{{ $product->tag ?? '' }}', 
                                                 price: '{{ $product->price }}', 
-                                                image: '{{ $product->image }}', 
-                                                description: '{{ addslashes($product->description) }}',
+                                                image: '{{ $product->image ?? '' }}', 
+                                                description: '{{ addslashes($product->description ?? '') }}',
                                                 imagePreview: null
                                             }" 
                                             class="inline-flex items-center justify-center space-x-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
@@ -248,9 +256,13 @@
                         
                         <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
                             <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm shrink-0">
-                                <img src="{{ Str::startsWith($order['product_image'], 'http') ? $order['product_image'] : asset('storage/' . $order['product_image']) }}" 
-                                     alt="{{ $order['product_name'] }}" 
-                                     class="w-full h-full object-cover">
+                                @if(!empty($order['product_image']))
+                                    <img src="{{ Str::startsWith($order['product_image'], 'http') ? $order['product_image'] : asset('storage/' . $order['product_image']) }}" 
+                                         alt="{{ $order['product_name'] }}" 
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-slate-100 flex items-center justify-center text-xs text-slate-400">No img</div>
+                                @endif
                             </div>
                             
                             <div class="min-w-0">
@@ -281,7 +293,9 @@
 
             <!-- LEFT SIDE: PRODUCT IMAGE -->
             <div class="w-full md:w-5/12 relative bg-slate-100 shrink-0 h-48 sm:h-64 md:h-auto md:min-h-full">
-                <img :src="selectedOrder?.product_image?.startsWith('http') ? selectedOrder.product_image : '/storage/' + selectedOrder?.product_image" alt="Produit" class="absolute inset-0 w-full h-full object-cover">
+                <template x-if="selectedOrder?.product_image">
+                    <img :src="selectedOrder.product_image.startsWith('http') ? selectedOrder.product_image : '/storage/' + selectedOrder.product_image" alt="Produit" class="absolute inset-0 w-full h-full object-cover">
+                </template>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                 
                 <div class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 text-white">
@@ -370,13 +384,13 @@
                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30" 
                        @change="editProduct.imagePreview = URL.createObjectURL($event.target.files[0])">
 
-                <template x-if="editProduct.imagePreview || (editProduct.image && !editProduct.imagePreview)">
+                <template x-if="editProduct.imagePreview || (editProduct.image && editProduct.image !== '' && editProduct.image !== 'undefined')">
                     <img :src="editProduct.imagePreview ? editProduct.imagePreview : (editProduct.image.startsWith('http') ? editProduct.image : '/storage/' + editProduct.image)" 
                          class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300" 
                          alt="Aperçu">
                 </template>
 
-                <template x-if="!editProduct.imagePreview && !editProduct.image">
+                <template x-if="!editProduct.imagePreview && (!editProduct.image || editProduct.image === '' || editProduct.image === 'undefined')">
                     <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10 space-y-3">
                         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="text-sm font-medium">Aucune image</span>
@@ -399,9 +413,9 @@
                     <p class="text-xs text-slate-500 mt-2">Mettez à jour les informations ci-dessous.</p>
                 </div>
 
-                <!-- Correction de l'action dynamique du formulaire avec concaténation correcte -->
                 <form id="editForm" :action="'/admin/' + '{{ $category }}' + '/' + editProduct.id" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-5">
                     @csrf
+                    @method('PUT')
 
                     <div>
                         <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Nom du produit</label>
