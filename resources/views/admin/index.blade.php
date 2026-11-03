@@ -402,7 +402,6 @@
                 <!-- Correction de l'action dynamique du formulaire avec concaténation correcte -->
                 <form id="editForm" :action="'/admin/' + '{{ $category }}' + '/' + editProduct.id" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-5">
                     @csrf
-                    @method('PUT')
 
                     <div>
                         <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Nom du produit</label>
