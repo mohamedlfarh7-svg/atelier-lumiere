@@ -116,11 +116,11 @@
                                 openEditModal = true; 
                                 editProduct = { 
                                     id: '{{ $product->id }}', 
-                                    name: {!! json_encode($product->name) !!}, 
-                                    tag: {!! json_encode($product->tag ?? '') !!}, 
+                                    name: @js($product->name), 
+                                    tag: @js($product->tag ?? ''), 
                                     price: '{{ $product->price }}', 
-                                    image: {!! json_encode($product->image ?? '') !!}, 
-                                    description: {!! json_encode($product->description ?? '') !!},
+                                    image: @js($product->image ?? ''), 
+                                    description: @js($product->description ?? ''),
                                     imagePreview: null
                                 }"
                                 class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
@@ -188,11 +188,11 @@
                                             openEditModal = true; 
                                             editProduct = { 
                                                 id: '{{ $product->id }}', 
-                                                name: {!! json_encode($product->name) !!}, 
-                                                tag: {!! json_encode($product->tag ?? '') !!}, 
+                                                name: @js($product->name), 
+                                                tag: @js($product->tag ?? ''), 
                                                 price: '{{ $product->price }}', 
-                                                image: {!! json_encode($product->image ?? '') !!}, 
-                                                description: {!! json_encode($product->description ?? '') !!},
+                                                image: @js($product->image ?? ''), 
+                                                description: @js($product->description ?? ''),
                                                 imagePreview: null
                                             }" 
                                             class="inline-flex items-center justify-center space-x-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
