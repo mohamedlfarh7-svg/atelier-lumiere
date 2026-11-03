@@ -3,19 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\BouleDeNeige;
 use App\Models\Nounours;
 use App\Models\Parfum;
 use App\Models\Cadeau;
-use App\Models\Order; // زدنا هادي
-use Illuminate\Support\Facades\Storage;
+use App\Models\Order;
 
 class AdminController extends Controller
 {
-    // Helper function bash n-3arfo lmodel 3la ḥsab la catégorie
     private function getModel($category)
     {
-        return match($category) {
+        return match ($category) {
             'boules-de-neige' => BouleDeNeige::class,
             'nounours' => Nounours::class,
             'parfums' => Parfum::class,
@@ -24,32 +23,40 @@ class AdminController extends Controller
         };
     }
 
-    // Afficher la liste f l'admin panel 3la ḥsab la catégorie
-   public function index(Request $request, $category)
-{
-    $modelClass = $this->getModel($category);
-    $products = $modelClass::latest()->get();
+    public function index(Request $request, $category)
+    {
+        $modelClass = $this->getModel($category);
 
-    // جلب الطلبات مباشرة (البيانات كاملة فيهم)
-    $pendingOrders = Order::where('status', 'pending')->latest()->get();
-    $pendingOrdersCount = $pendingOrders->count();
+        $products = $modelClass::latest()->get();
 
-    return view('admin.index', compact('products', 'category', 'pendingOrders', 'pendingOrdersCount'));
-}
+        $pendingOrders = Order::where('status', 'pending')
+            ->latest()
+            ->get();
 
-    // Ajout (Store)
+        $pendingOrdersCount = $pendingOrders->count();
+
+        return view('admin.index', compact(
+            'products',
+            'category',
+            'pendingOrders',
+            'pendingOrdersCount'
+        ));
+    }
+
     public function store(Request $request, $category)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'tag' => 'nullable|string',
-            'price' => 'required|numeric',
+            'tag' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
             'description' => 'nullable|string',
         ]);
 
         $modelClass = $this->getModel($category);
-        $imagePath = $request->file('image')->store('products', 'public');
+
+        $imagePath = $request->file('image')
+            ->store('products', 'public');
 
         $modelClass::create([
             'name' => $request->name,
@@ -59,21 +66,24 @@ class AdminController extends Controller
             'description' => $request->description,
         ]);
 
-        return back()->with('success', 'Produit ajouté avec succès !');
+        return back()->with(
+            'success',
+            'Produit ajouté avec succès !'
+        );
     }
 
-    // Modification (Update)
     public function update(Request $request, $category, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'tag' => 'nullable|string',
-            'price' => 'required|numeric',
+            'tag' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'description' => 'nullable|string',
         ]);
 
         $modelClass = $this->getModel($category);
+
         $product = $modelClass::findOrFail($id);
 
         $data = [
@@ -84,51 +94,73 @@ class AdminController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            if ($product->image && !str_starts_with($product->image, 'http')) {
+
+            if (
+                $product->image &&
+                !str_starts_with($product->image, 'http')
+            ) {
                 Storage::disk('public')->delete($product->image);
             }
-            $data['image'] = $request->file('image')->store('products', 'public');
+
+            $data['image'] = $request
+                ->file('image')
+                ->store('products', 'public');
         }
 
         $product->update($data);
 
-        return back()->with('success', 'Produit modifié avec succès !');
+        return back()->with(
+            'success',
+            'Produit modifié avec succès !'
+        );
     }
 
-    // Suppression (Destroy)
     public function destroy($category, $id)
     {
         $modelClass = $this->getModel($category);
+
         $product = $modelClass::findOrFail($id);
-        
-        if ($product->image && !str_starts_with($product->image, 'http')) {
+
+        if (
+            $product->image &&
+            !str_starts_with($product->image, 'http')
+        ) {
             Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
 
-        return back()->with('success', 'Produit supprimé avec succès !');
+        return back()->with(
+            'success',
+            'Produit supprimé avec succès !'
+        );
     }
 
-    // ==========================================
-    // DOUAL JODOD DYAL COMMANDES
-    // ==========================================
-
-    // قبول الطلب
     public function acceptOrder($id)
     {
         $order = Order::findOrFail($id);
-        $order->update(['status' => 'accepted']);
 
-        return back()->with('success', 'Commande validée avec succès !');
+        $order->update([
+            'status' => 'accepted',
+        ]);
+
+        return back()->with(
+            'success',
+            'Commande validée avec succès !'
+        );
     }
 
-    // رفض الطلب
     public function refuseOrder($id)
     {
         $order = Order::findOrFail($id);
-        $order->update(['status' => 'refused']);
 
-        return back()->with('success', 'Commande refusée.');
+        $order->update([
+            'status' => 'refused',
+        ]);
+
+        return back()->with(
+            'success',
+            'Commande refusée.'
+        );
     }
 }
