@@ -44,7 +44,8 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::post('/{category}', [AdminController::class, 'store'])->name('store');
 
     // Modifier un produit existant
-    Route::put('/{category}/{id}', [AdminController::class, 'update'])->name('update');
+    // Modifier un produit existant (avec /update)
+Route::put('/{category}/{id}/update', [AdminController::class, 'update'])->name('update');  
 
     // Supprimer un produit
     Route::delete('/{category}/{id}', [AdminController::class, 'destroy'])->name('destroy');
