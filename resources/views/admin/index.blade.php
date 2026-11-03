@@ -99,11 +99,7 @@
                 @forelse($products as $product)
                     <div class="p-4 flex flex-col gap-3">
                         <div class="flex items-center gap-3">
-                            @if($product->image)
-                                <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-16 h-16 object-cover rounded-xl shadow-sm border border-slate-100 shrink-0">
-                            @else
-                                <div class="w-16 h-16 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 shrink-0 text-xs">No img</div>
-                            @endif
+                            <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-16 h-16 object-cover rounded-xl shadow-sm border border-slate-100 shrink-0">
                             <div class="min-w-0 flex-1">
                                 <p class="font-bold text-slate-900 text-sm truncate">{{ $product->name }}</p>
                                 <p class="text-xs text-slate-400 mt-0.5 line-clamp-2">{{ $product->description }}</p>
@@ -121,10 +117,10 @@
                                 editProduct = { 
                                     id: '{{ $product->id }}', 
                                     name: '{{ addslashes($product->name) }}', 
-                                    tag: '{{ $product->tag ?? '' }}', 
+                                    tag: '{{ $product->tag }}', 
                                     price: '{{ $product->price }}', 
-                                    image: '{{ $product->image ?? '' }}', 
-                                    description: '{{ addslashes($product->description ?? '') }}',
+                                    image: '{{ $product->image }}', 
+                                    description: '{{ addslashes($product->description) }}',
                                     imagePreview: null
                                 }"
                                 class="flex-1 inline-flex items-center justify-center gap-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-3 py-2.5 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
@@ -169,11 +165,7 @@
                             <tr class="hover:bg-slate-50/80 transition-colors group">
                                 <td class="py-4 px-6">
                                     <div class="flex items-center space-x-4">
-                                        @if($product->image)
-                                            <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-14 h-14 object-cover rounded-xl shadow-sm border border-slate-100">
-                                        @else
-                                            <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 text-xs">No img</div>
-                                        @endif
+                                        <img src="{{ Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-14 h-14 object-cover rounded-xl shadow-sm border border-slate-100">
                                         <div>
                                             <p class="font-bold text-slate-900">{{ $product->name }}</p>
                                             <p class="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[200px]">{{ $product->description }}</p>
@@ -197,10 +189,10 @@
                                             editProduct = { 
                                                 id: '{{ $product->id }}', 
                                                 name: '{{ addslashes($product->name) }}', 
-                                                tag: '{{ $product->tag ?? '' }}', 
+                                                tag: '{{ $product->tag }}', 
                                                 price: '{{ $product->price }}', 
-                                                image: '{{ $product->image ?? '' }}', 
-                                                description: '{{ addslashes($product->description ?? '') }}',
+                                                image: '{{ $product->image }}', 
+                                                description: '{{ addslashes($product->description) }}',
                                                 imagePreview: null
                                             }" 
                                             class="inline-flex items-center justify-center space-x-1.5 bg-amber-50 text-amber-600 border border-amber-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all duration-300">
@@ -256,13 +248,9 @@
                         
                         <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
                             <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border border-slate-100 shadow-sm shrink-0">
-                                @if(!empty($order['product_image']))
-                                    <img src="{{ Str::startsWith($order['product_image'], 'http') ? $order['product_image'] : asset('storage/' . $order['product_image']) }}" 
-                                         alt="{{ $order['product_name'] }}" 
-                                         class="w-full h-full object-cover">
-                                @else
-                                    <div class="w-full h-full bg-slate-100 flex items-center justify-center text-xs text-slate-400">No img</div>
-                                @endif
+                                <img src="{{ Str::startsWith($order['product_image'], 'http') ? $order['product_image'] : asset('storage/' . $order['product_image']) }}" 
+                                     alt="{{ $order['product_name'] }}" 
+                                     class="w-full h-full object-cover">
                             </div>
                             
                             <div class="min-w-0">
@@ -293,9 +281,7 @@
 
             <!-- LEFT SIDE: PRODUCT IMAGE -->
             <div class="w-full md:w-5/12 relative bg-slate-100 shrink-0 h-48 sm:h-64 md:h-auto md:min-h-full">
-                <template x-if="selectedOrder?.product_image">
-                    <img :src="selectedOrder.product_image.startsWith('http') ? selectedOrder.product_image : '/storage/' + selectedOrder.product_image" alt="Produit" class="absolute inset-0 w-full h-full object-cover">
-                </template>
+                <img :src="selectedOrder?.product_image?.startsWith('http') ? selectedOrder.product_image : '/storage/' + selectedOrder?.product_image" alt="Produit" class="absolute inset-0 w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                 
                 <div class="absolute bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6 text-white">
@@ -384,13 +370,13 @@
                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30" 
                        @change="editProduct.imagePreview = URL.createObjectURL($event.target.files[0])">
 
-                <template x-if="editProduct.imagePreview || (editProduct.image && editProduct.image !== '')">
+                <template x-if="editProduct.imagePreview || (editProduct.image && !editProduct.imagePreview)">
                     <img :src="editProduct.imagePreview ? editProduct.imagePreview : (editProduct.image.startsWith('http') ? editProduct.image : '/storage/' + editProduct.image)" 
                          class="absolute inset-0 w-full h-full object-cover z-10 transition-opacity duration-300" 
                          alt="Aperçu">
                 </template>
 
-                <template x-if="!editProduct.imagePreview && (!editProduct.image || editProduct.image === '')">
+                <template x-if="!editProduct.imagePreview && !editProduct.image">
                     <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 z-10 space-y-3">
                         <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="text-sm font-medium">Aucune image</span>
@@ -399,56 +385,67 @@
 
                 <div class="absolute inset-0 bg-slate-900/50 z-20 opacity-0 hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none text-white space-y-2">
                     <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
-                    <span class="text-xs font-semibold tracking-wider uppercase">Changer l'image</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Changer l'image</span>
                 </div>
             </div>
 
             <!-- RIGHT SIDE: FORM -->
-            <div class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white flex flex-col">
-                <div class="mb-6">
-                    <p class="text-[10px] uppercase tracking-[0.2em] text-blue-600 font-bold mb-1">Modification</p>
-                    <h3 class="font-serif text-2xl md:text-3xl text-slate-900">Modifier le produit</h3>
+            <div class="w-full md:w-7/12 p-5 sm:p-8 md:p-10 overflow-y-auto modal-scroll bg-white">
+                <div class="mb-6 md:mb-8">
+                    <p class="text-[10px] uppercase tracking-[0.25em] text-blue-600 font-bold mb-2">Modification</p>
+                    <h3 class="font-serif text-2xl md:text-3xl text-slate-900">Détails du produit</h3>
+                    <p class="text-xs text-slate-500 mt-2">Mettez à jour les informations ci-dessous.</p>
                 </div>
 
-                <form id="editForm" :action="'/admin/' + '{{ $category }}' + '/' + editProduct.id + '/update'" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-5 flex-1">
+                <!-- Correction de l'action dynamique du formulaire avec concaténation correcte -->
+                <form id="editForm" :action="'/admin/' + '{{ $category }}' + '/' + editProduct.id" method="POST" enctype="multipart/form-data" class="space-y-4 sm:space-y-5">
                     @csrf
                     @method('PUT')
 
                     <div>
-                        <label class="block text-xs uppercase tracking-wider font-bold text-slate-600 mb-2">Nom du produit</label>
-                        <input type="text" name="name" x-model="editProduct.name" required
-                               class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition">
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs uppercase tracking-wider font-bold text-slate-600 mb-2">Prix (DH)</label>
-                            <input type="number" step="0.01" name="price" x-model="editProduct.price" required
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-wider font-bold text-slate-600 mb-2">Tag / Badge</label>
-                            <input type="text" name="tag" x-model="editProduct.tag"
-                                   class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition" placeholder="Ex: Grand, Populaire...">
-                        </div>
+                        <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Nom du produit</label>
+                        <input type="text" name="name" x-model="editProduct.name" required class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800">
                     </div>
 
                     <div>
-                        <label class="block text-xs uppercase tracking-wider font-bold text-slate-600 mb-2">Description</label>
-                        <textarea name="description" x-model="editProduct.description" rows="4"
-                                  class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3.5 text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:bg-white transition modal-scroll"></textarea>
+                        <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Tag / Catégorie</label>
+                        <select name="tag" x-model="editProduct.tag" class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800 cursor-pointer">
+                            <option value="">Sélectionnez un tag (Optionnel)</option>
+                            @if($category == 'boules-de-neige')
+                                <option value="Grand">Grand</option>
+                                <option value="Moyen">Moyen</option>
+                                <option value="Petite">Petite</option>
+                            @elseif($category == 'nounours')
+                                <option value="Coup de cœur">Coup de cœur</option>
+                                <option value="Édition douce">Édition douce</option>
+                            @elseif($category == 'parfums')
+                                <option value="Femme">Femme</option>
+                                <option value="Homme">Homme</option>
+                            @elseif($category == 'cadeaux')
+                                <option value="Romantique">Romantique</option>
+                                <option value="Anniversaire">Anniversaire</option>
+                                <option value="Naissance">Naissance</option>
+                                <option value="Merci">Merci</option>
+                            @endif
+                        </select>
                     </div>
 
-                    <div class="pt-4 flex gap-3">
-                        <button type="submit" class="flex-1 bg-slate-900 text-white py-4 rounded-full text-xs uppercase tracking-widest hover:bg-slate-800 transition font-bold shadow-lg">
-                            Enregistrer
-                        </button>
-                        <button type="button" @click="openEditModal = false" class="bg-slate-100 text-slate-700 px-6 py-4 rounded-full text-xs uppercase tracking-widest hover:bg-slate-200 transition font-bold">
-                            Annuler
-                        </button>
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Prix (DH)</label>
+                        <input type="number" step="0.01" name="price" x-model="editProduct.price" required class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800">
                     </div>
+
+                    <div>
+                        <label class="block text-[11px] uppercase tracking-wider text-slate-500 mb-1.5 font-bold">Description</label>
+                        <textarea name="description" x-model="editProduct.description" rows="3" class="w-full bg-slate-50/50 border border-slate-200 rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 text-sm focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition text-slate-800 resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-[#121c2c] text-white py-3.5 sm:py-4 rounded-full text-xs uppercase tracking-[0.2em] font-medium hover:bg-slate-800 transition shadow-lg flex items-center justify-center space-x-2 mt-4 group">
+                        <span>Enregistrer les modifications</span>
+                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
                 </form>
             </div>
         </div>
