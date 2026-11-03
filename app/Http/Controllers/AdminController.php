@@ -26,21 +26,11 @@ class AdminController extends Controller
     public function index(Request $request, $category)
     {
         $modelClass = $this->getModel($category);
-
         $products = $modelClass::latest()->get();
-
-        $pendingOrders = Order::where('status', 'pending')
-            ->latest()
-            ->get();
-
+        $pendingOrders = Order::where('status', 'pending')->latest()->get();
         $pendingOrdersCount = $pendingOrders->count();
 
-        return view('admin.index', compact(
-            'products',
-            'category',
-            'pendingOrders',
-            'pendingOrdersCount'
-        ));
+        return view('admin.index', compact('products', 'category', 'pendingOrders', 'pendingOrdersCount'));
     }
 
     public function store(Request $request, $category)
@@ -54,9 +44,7 @@ class AdminController extends Controller
         ]);
 
         $modelClass = $this->getModel($category);
-
-        $imagePath = $request->file('image')
-            ->store('products', 'public');
+        $imagePath = $request->file('image')->store('products', 'public');
 
         $modelClass::create([
             'name' => $request->name,
@@ -66,10 +54,7 @@ class AdminController extends Controller
             'description' => $request->description,
         ]);
 
-        return back()->with(
-            'success',
-            'Produit ajouté avec succès !'
-        );
+        return back()->with('success', 'Produit ajouté avec succès !');
     }
 
     public function update(Request $request, $category, $id)
@@ -83,7 +68,6 @@ class AdminController extends Controller
         ]);
 
         $modelClass = $this->getModel($category);
-
         $product = $modelClass::findOrFail($id);
 
         $data = [
@@ -94,73 +78,42 @@ class AdminController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-
-            if (
-                $product->image &&
-                !str_starts_with($product->image, 'http')
-            ) {
+            if ($product->image && !str_starts_with($product->image, 'http')) {
                 Storage::disk('public')->delete($product->image);
             }
-
-            $data['image'] = $request
-                ->file('image')
-                ->store('products', 'public');
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         $product->update($data);
 
-        return back()->with(
-            'success',
-            'Produit modifié avec succès !'
-        );
+        return back()->with('success', 'Produit modifié avec succès !');
     }
 
     public function destroy($category, $id)
     {
         $modelClass = $this->getModel($category);
-
         $product = $modelClass::findOrFail($id);
 
-        if (
-            $product->image &&
-            !str_starts_with($product->image, 'http')
-        ) {
+        if ($product->image && !str_starts_with($product->image, 'http')) {
             Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
 
-        return back()->with(
-            'success',
-            'Produit supprimé avec succès !'
-        );
+        return back()->with('success', 'Produit supprimé avec succès !');
     }
 
     public function acceptOrder($id)
     {
         $order = Order::findOrFail($id);
-
-        $order->update([
-            'status' => 'accepted',
-        ]);
-
-        return back()->with(
-            'success',
-            'Commande validée avec succès !'
-        );
+        $order->update(['status' => 'accepted']);
+        return back()->with('success', 'Commande validée avec succès !');
     }
 
     public function refuseOrder($id)
     {
         $order = Order::findOrFail($id);
-
-        $order->update([
-            'status' => 'refused',
-        ]);
-
-        return back()->with(
-            'success',
-            'Commande refusée.'
-        );
+        $order->update(['status' => 'refused']);
+        return back()->with('success', 'Commande refusée.');
     }
 }
