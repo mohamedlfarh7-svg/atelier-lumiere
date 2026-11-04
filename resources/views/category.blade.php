@@ -47,9 +47,7 @@
             @auth
                 <!-- Desktop seulement (lg+) : Gérer + Déconnexion -->
                 <div class="hidden lg:flex items-center space-x-2 xl:space-x-3">
-                    <a href="{{ route('admin.index', ['category' => $slug]) }}" class="bg-slate-900 text-white px-4 xl:px-5 py-2.5 text-xs uppercase tracking-wider rounded-full hover:bg-slate-800 transition flex items-center space-x-2 whitespace-nowrap">
-                        <span>⚙️</span><span>Gérer Admin</span>
-                    </a>
+                    
                     <form action="{{ route('admin.logout') }}" method="POST" class="inline">
                         @csrf
                         <button type="submit" class="border border-rose-200 text-rose-600 px-4 py-2 text-xs uppercase tracking-wider rounded-full hover:bg-rose-50 transition whitespace-nowrap">
@@ -59,9 +57,7 @@
                 </div>
             @else
                 <!-- Desktop seulement : Admin login -->
-                <a href="{{ route('admin.login') }}" class="hidden lg:flex border border-slate-300 px-4 xl:px-5 py-2.5 text-xs uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white transition items-center space-x-2 bg-white text-slate-700 whitespace-nowrap">
-                    <span>👤</span> <span>Admin</span>
-                </a>
+               
             @endauth
 
             <!-- BURGER : visible jusqu'à lg (< 1024px) -->
@@ -126,9 +122,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('admin.login') }}" @click="mobileMenu = false" class="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-wider font-bold border border-slate-300 text-slate-700 hover:bg-slate-900 hover:text-white transition">
-                        <span>👤</span> Admin
-                    </a>
+                   
                 @endauth
             </div>
         </div>

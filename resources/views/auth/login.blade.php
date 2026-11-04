@@ -37,9 +37,7 @@
         <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
 
             <!-- Bouton Admin (caché sur très petit écran, visible sm+) -->
-            <a href="/admin/login" class="hidden sm:flex border border-slate-300 px-4 md:px-5 py-2 text-xs uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white transition items-center space-x-2 bg-white text-slate-700">
-                <span>👤</span> <span class="font-medium">Admin</span>
-            </a>
+            
 
             <!-- BOUTON BURGER (visible < md) -->
             <button @click="mobileMenu = !mobileMenu"
@@ -79,9 +77,7 @@
             <a href="/cadeaux" @click="mobileMenu = false" class="block px-4 py-3 rounded-xl text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">Cadeaux</a>
 
             <div class="pt-2 mt-2 border-t border-slate-100">
-                <a href="/admin/login" @click="mobileMenu = false" class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-bold bg-slate-900 text-white hover:bg-slate-800 transition">
-                    <span>👤</span> Admin
-                </a>
+                
             </div>
         </div>
     </header>

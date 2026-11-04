@@ -62,10 +62,7 @@
                 </div>
             @else
                 <!-- Desktop seulement : Admin login -->
-                <a href="{{ route('admin.login') }}" class="hidden lg:flex border border-slate-300 bg-white px-4 xl:px-5 py-2.5 text-xs uppercase tracking-wider rounded-full hover:bg-slate-900 hover:text-white transition items-center space-x-2 text-slate-700 shadow-sm whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span>Admin</span>
-                </a>
+               
             @endauth
 
             <!-- BURGER : visible jusqu'à lg (< 1024px) -->
@@ -121,10 +118,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('admin.login') }}" @click="mobileMenu = false" class="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-wider font-bold border border-slate-300 text-slate-700 hover:bg-slate-900 hover:text-white transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        Admin
-                    </a>
+                   
                 @endauth
             </div>
         </div>
