@@ -8,13 +8,20 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
+        // يقرا الإيميل والباسورد من Render (Environment Variables)
+        $email = env('ADMIN_EMAIL', 'default@gmail.com');
+        $password = env('ADMIN_PASSWORD', 'default123456');
+
         User::updateOrCreate(
-            ['email' => 'mohamedlfarh7@gmail.com'],
+            ['email'    => $email], // كيقلب على الـ Admin بالـ Role
             [
-                'name' => 'Admin Atelier',
-                'password' => Hash::make('mohamed1234'),
+                'name'     => 'Admin',
+                'password' => Hash::make($password),
             ]
         );
     }
